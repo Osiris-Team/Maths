@@ -24,7 +24,7 @@ public class Function {
         name = string.substring(0, indexOfFirstBrace);
         int indexOfEqualSign = string.indexOf("=");
         if (indexOfEqualSign==-1) throw new Exception("Failed to find a '=' in the provided function!");
-        String function = string.substring(indexOfEqualSign);
+        String function = string.substring(indexOfEqualSign+1).replaceAll(" ", "");
         try(BufferedReader reader = new BufferedReader(new StringReader(function))){
             int charAsInt = 0;
             char c = 0;
@@ -35,11 +35,11 @@ public class Function {
             StringBuilder number = new StringBuilder();
             while ((charAsInt = reader.read()) != -1){
                 c = (char) charAsInt;
-                cIsDigit = Utils.isDigit(charAsInt);
-                if (cIsDigit || c == ',' || c == '.'){
+                cIsDigit = Utils.isDigit(c);
+                if (cIsDigit || c == ',' || c == '.' || c == '-' || c == '+'){
                     number.append(c);
                 }
-                else{ // not a digit, which means It's either an operator or a variable name
+                else{ // not a digit, but variable name
                     if (!cIsDigitBefore){ // ax
                         variables.add(new Variable(c, 1.0));
                     } else {
@@ -50,7 +50,7 @@ public class Function {
                 cIsDigitBefore = cIsDigit;
                 i++;
             }
-            String lastNumber = number.toString();
+            String lastNumber = number.toString().trim();
             if(!lastNumber.isEmpty()) variables.add(new Variable((char)0, Double.parseDouble(lastNumber)));
         }
     }
@@ -66,7 +66,7 @@ public class Function {
         out.print("Variables: ");
         for (Variable var :
                 variables) {
-            out.println(var.name+"="+var.value+" ");
+            out.print(var.name+"="+var.value+" ");
         }
         out.println();
     }
