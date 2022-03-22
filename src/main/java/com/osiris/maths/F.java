@@ -13,12 +13,36 @@ public class F {
         return result;
     }
 
-    public static Double sub(Double... numbers){
+    public static Obj3 sum(Obj3... objects){
+        double resultX = 0.0;
+        double resultY = 0.0;
+        double resultZ = 0.0;
+        for (Obj3 obj : objects) {
+            resultX = resultX + obj.x;
+            resultY = resultY + obj.y;
+            resultZ = resultZ + obj.z;
+        }
+        return new Obj3(resultX, resultY, resultZ);
+    }
+
+    public static Double subtract(Double... numbers){
         double result = 0.0;
         for (Double num : numbers) {
             result = result - num;
         }
         return result;
+    }
+
+    public static Obj3 subtract(Obj3... objects){
+        double resultX = 0.0;
+        double resultY = 0.0;
+        double resultZ = 0.0;
+        for (Obj3 obj : objects) {
+            resultX = resultX - obj.x;
+            resultY = resultY - obj.y;
+            resultZ = resultZ - obj.z;
+        }
+        return new Obj3(resultX, resultY, resultZ);
     }
 
     public static Double multiply(Double... numbers){
@@ -29,12 +53,82 @@ public class F {
         return result;
     }
 
+    public static Obj3 multiply(Obj3... objects){
+        double resultX = 1.0;
+        double resultY = 1.0;
+        double resultZ = 1.0;
+        for (Obj3 obj : objects) {
+            resultX = resultX * obj.x;
+            resultY = resultY * obj.y;
+            resultZ = resultZ * obj.z;
+        }
+        return new Obj3(resultX, resultY, resultZ);
+    }
+
     public static Double divide(Double... numbers){
         double result = numbers[0] * numbers[0];
         for (Double num : numbers) {
             result = result / num;
         }
         return result;
+    }
+
+    public static Obj3 divide(Obj3... objects){
+        double resultX = objects[0].x * objects[0].x;
+        double resultY = objects[0].y * objects[0].y;
+        double resultZ = objects[0].z * objects[0].z;
+        for (Obj3 obj : objects) {
+            resultX = resultX / obj.x;
+            resultY = resultY / obj.y;
+            resultZ = resultZ / obj.z;
+        }
+        return new Obj3(resultX, resultY, resultZ);
+    }
+
+    public static Double raiseToPowerOf(Double number, int power){
+        Double[] numbers = new Double[power];
+        for (int i = 0; i < power; i++) {
+            numbers[i] = number;
+        }
+        return multiply(numbers);
+    }
+
+    /**
+     * Allows to raise something to the power of 2.89 for example. <br>
+     * Pass over 2 for power and 0.89 for powerDecimal, to achieve that.
+     */
+    public static Double raiseToPowerOf(Double number, int power, Double powerDecimal){
+        Double[] numbers = new Double[power];
+        for (int i = 0; i < power; i++) {
+            numbers[i] = number;
+        }
+        return multiply(numbers) + (number * powerDecimal);
+    }
+
+    /**
+     * 2^3 = 8; radix(8,3) returns 2 (the base of the exponent). <br>
+     */
+    public static Double root(Double number, int power){
+        // With Newtons' method
+        double xPre = Math.random() % 10; // initially guessing a random number between 0-9
+        double eps = 0.001; // smaller eps, denotes more accuracy
+        double delX = Integer.MAX_VALUE; // initializing difference between two roots by INT_MAX
+
+        // xK denotes current value of x
+        double xK = 0.0;
+
+        // loop until we reach desired accuracy
+        while (delX > eps)
+        {
+            // calculating current value from previous
+            // value by newton's method
+            xK = ((power - 1.0) * xPre +
+                    number / Math.pow(xPre, power - 1)) / (double)power;
+            delX = Math.abs(xK - xPre);
+            xPre = xK;
+        }
+
+        return xK;
     }
 
     /**
@@ -49,14 +143,6 @@ public class F {
             result = raiseToPowerOf((double) num, result.intValue());
         }
         return result;
-    }
-
-    public static Double raiseToPowerOf(Double number, int power){ // TODO power as double, like 2.8 or 15.298
-        Double[] numbers = new Double[power];
-        for (int i = 0; i < power; i++) {
-            numbers[i] = number;
-        }
-        return multiply(numbers);
     }
 
     public static Double factorial(int number){ // TODO number as double, like 2.8 or 15.298
