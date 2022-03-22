@@ -33,25 +33,31 @@ public class Function {
             boolean cIsDigitBefore = false;
             int i = 0;
             StringBuilder number = new StringBuilder();
+            StringBuilder varname = new StringBuilder();
             while ((charAsInt = reader.read()) != -1){
                 c = (char) charAsInt;
                 cIsDigit = Utils.isDigit(c);
                 if (cIsDigit || c == ',' || c == '.' || c == '-' || c == '+'){
-                    number.append(c);
-                }
-                else{ // not a digit, but variable name
-                    if (!cIsDigitBefore){ // ax
-                        variables.add(new Variable(c, 1.0));
-                    } else {
-                        variables.add(new Variable(c, Double.parseDouble(number.toString())));
-                        number = new StringBuilder();
+                    if(varname.length() != 0){
+                        Variable var = new Variable(varname.toString(), 1.0);
+                        if(cIsDigitBefore) {
+                            var.value = Double.parseDouble(number.toString());
+                            number = new StringBuilder();
+                            varname = new StringBuilder();
+                        }
+                        variables.add(var);
                     }
+                    number.append(c);
+
+                }
+                else{ // not a digit, but variable name or c == '*' || c == '/' || c == '^' || c == '!' etc
+                    varname.append(c);
                 }
                 cIsDigitBefore = cIsDigit;
                 i++;
             }
             String lastNumber = number.toString().trim();
-            if(!lastNumber.isEmpty()) variables.add(new Variable((char)0, Double.parseDouble(lastNumber)));
+            if(!lastNumber.isEmpty()) variables.add(new Variable("", Double.parseDouble(lastNumber)));
         }
     }
 
@@ -69,5 +75,13 @@ public class Function {
             out.print(var.name+"="+var.value+" ");
         }
         out.println();
+    }
+
+    public void printResult(){
+
+    }
+
+    public void getResult(){
+
     }
 }
