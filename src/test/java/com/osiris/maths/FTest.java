@@ -31,6 +31,11 @@ class FTest {
     }
 
     @Test
+    void root() {
+        assertEquals(2.0, F.root(16.0, 4));
+    }
+
+    @Test
     void factorial() {
         assertEquals(5040.0, F.factorial(7));
     }
@@ -45,4 +50,6 @@ class FTest {
     void log() {
         assertEquals(3.0, F.log(8.0, 2.0, 20));
     }
+
+
 }
