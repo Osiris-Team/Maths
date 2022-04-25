@@ -3,8 +3,6 @@ package com.osiris.maths.binary.gates;
 import com.osiris.maths.binary.Bit;
 import com.osiris.maths.binary.Bits;
 
-import java.util.List;
-
 public class Gate {
     public Bits inputs;
     public Bit output;
@@ -18,7 +16,7 @@ public class Gate {
      * Changes {@link #output} according to
      * this gates logic and given {@link #inputs}.
      */
-    public void fire(){
+    public void fire() {
         // Implement logic by extending this class and overriding this method.
     }
 }

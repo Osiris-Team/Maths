@@ -1,7 +1,6 @@
 package com.osiris.maths.human;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,15 +30,16 @@ public class Matrix {
 
     /**
      * Returns the value at the provided row and column index.
+     *
      * @param iR indexRow
      * @param iC indexColumn
      */
-    public Double at(int iR, int iC){
+    public Double at(int iR, int iC) {
         return rows.get(iR).get(iC);
     }
 
-    public void resize(int newRowsCount, int newColumnsCount){
-        if(newRowsCount > rowsCount){
+    public void resize(int newRowsCount, int newColumnsCount) {
+        if (newRowsCount > rowsCount) {
             for (int i = 0; i < newRowsCount - rowsCount; i++) {
                 List<Double> values = new ArrayList<>();
                 for (int j = 0; j < newColumnsCount; j++) {
@@ -47,40 +47,41 @@ public class Matrix {
                 }
                 this.rows.add(values);
             }
-        } else{
+        } else {
             for (int i = 0; i < rowsCount - newRowsCount; i++) {
-                this.rows.remove(rowsCount-1-i);
+                this.rows.remove(rowsCount - 1 - i);
             }
         }
-        if(newColumnsCount > columnsCount){
+        if (newColumnsCount > columnsCount) {
             for (int i = 0; i < newColumnsCount - columnsCount; i++) {
                 for (List<Double> row :
                         rows) {
-                    if(row.size() < newColumnsCount)
+                    if (row.size() < newColumnsCount)
                         row.add(0.0);
                 }
             }
-        } else{
+        } else {
             for (int i = 0; i < columnsCount - newColumnsCount; i++) {
                 for (List<Double> row :
                         rows) {
-                    row.remove(row.size()-1);
+                    row.remove(row.size() - 1);
                 }
             }
         }
         this.columnsCount = newColumnsCount;
     }
 
-    public void setRow(int i, Double... values){
+    public void setRow(int i, Double... values) {
         List<Double> list = new ArrayList<>(values.length);
         Collections.addAll(list, values);
         setRow(i, list);
     }
-    public void setRow(int i, List<Double> values){
+
+    public void setRow(int i, List<Double> values) {
         this.rows.set(i, values);
     }
 
-    public List<List<Double>> getColumns(){
+    public List<List<Double>> getColumns() {
         List<List<Double>> columns = new ArrayList<>(columnsCount);
         for (int i = 0; i < columnsCount; i++) {
             List<Double> column = new ArrayList<>(rows.size());
@@ -94,37 +95,27 @@ public class Matrix {
 
     @Override
     public String toString() {
-        return super.toString() + "  "+rowsCount+"x"+columnsCount+ "\n" + asString();
+        return super.toString() + "  " + rowsCount + "x" + columnsCount + "\n" + asString();
     }
 
-    public String asString(){
+    public String asString() {
         return asString(rows);
     }
 
-    public String asString(List<List<Double>> list){
+    public String asString(List<List<Double>> list) {
         StringBuilder s = new StringBuilder();
         for (List<Double> row :
                 list) {
-            s.append(row+"\n");
+            s.append(row + "\n");
         }
         return s.toString();
-    }
-
-    public class NotEqual extends Exception{
-        public NotEqual(String message){
-            super(message);
-        }
-        public NotEqual(Matrix m0, Matrix m1) {
-            super("Both matrices must have the same row and column count. m0="+m0.rowsCount
-                    +"x"+m0.columnsCount+" != m1="+m1.rowsCount+"x"+m1.columnsCount);
-        }
     }
 
     /**
      * @return a new matrix containing the result.
      */
     public Matrix add(Matrix m) throws NotEqual {
-        if(rowsCount!=m.rowsCount || columnsCount!=m.columnsCount)
+        if (rowsCount != m.rowsCount || columnsCount != m.columnsCount)
             throw new NotEqual(this, m);
         Matrix newM = new Matrix(m.rowsCount, m.columnsCount);
         for (int i = 0; i < m.rows.size(); i++) {
@@ -143,7 +134,7 @@ public class Matrix {
      * @return a new matrix containing the result.
      */
     public Matrix subtract(Matrix m) throws NotEqual {
-        if(rowsCount!=m.rowsCount || columnsCount!=m.columnsCount)
+        if (rowsCount != m.rowsCount || columnsCount != m.columnsCount)
             throw new NotEqual(this, m);
         Matrix newM = new Matrix(m.rowsCount, m.columnsCount);
         for (int i = 0; i < m.rows.size(); i++) {
@@ -160,9 +151,10 @@ public class Matrix {
 
     /**
      * Multiplies this matrix with the provided number.
+     *
      * @return a new matrix containing the result.
      */
-    public Matrix multiply(Double num){
+    public Matrix multiply(Double num) {
         Matrix newM = new Matrix(rowsCount, columnsCount);
         for (int i = 0; i < rows.size(); i++) {
             List<Double> row = rows.get(i);
@@ -178,12 +170,13 @@ public class Matrix {
     /**
      * Multiplies this matrix with the provided matrix. <br>
      * Also called scalar matrix multiplication. <br>
+     *
      * @return a new matrix containing the result.
      * @throws NotEqual if the provided matrix row count is not equal to the current matrix column count.
      */
     public Matrix multiply(Matrix m) throws NotEqual {
-        if(m.rowsCount!=columnsCount)
-            throw new NotEqual("Provided matrix rowCount must be equal to this matrix columnCount. "+m.rowsCount+"!="+columnsCount);
+        if (m.rowsCount != columnsCount)
+            throw new NotEqual("Provided matrix rowCount must be equal to this matrix columnCount. " + m.rowsCount + "!=" + columnsCount);
         Matrix newM = new Matrix(rowsCount, m.columnsCount);
         List<List<Double>> otherColumns = m.getColumns();
         for (int i = 0; i < rowsCount; i++) {
@@ -201,18 +194,28 @@ public class Matrix {
         return newM;
     }
 
-
-    public Double determinant(){
+    public Double determinant() {
         return null;
     }
 
-    public Matrix laplaceExpansion(){
+    public Matrix laplaceExpansion() {
         return null;
     }
 
-    public class NotQuadratic extends Exception{
+    public class NotEqual extends Exception {
+        public NotEqual(String message) {
+            super(message);
+        }
+
+        public NotEqual(Matrix m0, Matrix m1) {
+            super("Both matrices must have the same row and column count. m0=" + m0.rowsCount
+                    + "x" + m0.columnsCount + " != m1=" + m1.rowsCount + "x" + m1.columnsCount);
+        }
+    }
+
+    public class NotQuadratic extends Exception {
         public NotQuadratic(Matrix m) {
-            super("Matrix must be quadratic (rows count == columns count) to perform this operation! "+m.rowsCount+"!="+m.columnsCount);
+            super("Matrix must be quadratic (rows count == columns count) to perform this operation! " + m.rowsCount + "!=" + m.columnsCount);
         }
     }
 }

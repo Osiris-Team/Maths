@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MatrixTest {
     Matrix m2x2 = new Matrix(2, 2);
     Matrix m5x5 = new Matrix(5, 5);
+
     public MatrixTest() {
         m2x2.setRow(0, 5.0, 2.0);
         m2x2.setRow(1, 3.0, 1.0);
@@ -104,10 +105,10 @@ class MatrixTest {
     @Test
     void multiply() throws Matrix.NotEqual {
         Matrix result = m2x2.multiply(2.0);
-        assertEquals(10.0, result.at(0,0));
-        assertEquals(4.0, result.at(0,1));
-        assertEquals(6.0, result.at(1,0));
-        assertEquals(2.0, result.at(1,1));
+        assertEquals(10.0, result.at(0, 0));
+        assertEquals(4.0, result.at(0, 1));
+        assertEquals(6.0, result.at(1, 0));
+        assertEquals(2.0, result.at(1, 1));
     }
 
     @Test
@@ -116,9 +117,9 @@ class MatrixTest {
         m.setRow(0, 0.0, 3.0);
         m.setRow(1, 1.0, 2.0);
         Matrix result = m2x2.multiply(m);
-        assertEquals(2.0, result.at(0,0));
-        assertEquals(19.0, result.at(0,1));
-        assertEquals(1.0, result.at(1,0));
-        assertEquals(11.0, result.at(1,1));
+        assertEquals(2.0, result.at(0, 0));
+        assertEquals(19.0, result.at(0, 1));
+        assertEquals(1.0, result.at(1, 0));
+        assertEquals(11.0, result.at(1, 1));
     }
 }

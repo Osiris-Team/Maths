@@ -4,7 +4,7 @@ import com.osiris.maths.binary.Bit;
 import com.osiris.maths.binary.Bits;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ANDTest {
 

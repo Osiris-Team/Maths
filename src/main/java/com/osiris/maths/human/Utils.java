@@ -10,7 +10,7 @@ public class Utils {
     /**
      * Returns true if the provided utf8 encoded char is a digit.
      */
-    public static boolean isDigit(char utf8Char){
+    public static boolean isDigit(char utf8Char) {
         for (int i = 0; i < 10; i++) {
             if (utf8Digits[i] == utf8Char)
                 return true;
