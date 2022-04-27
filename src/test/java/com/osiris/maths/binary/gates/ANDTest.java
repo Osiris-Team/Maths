@@ -16,7 +16,7 @@ class ANDTest {
         System.out.println(a.inputs);
         // AND gate requires all inputs to be true/1
         assertEquals(false, output.value);
-        a.inputs = Bits.from("11");
+        a.inputs = Bits.from("11").bits;
         System.out.println(a.inputs);
         a.fire();
         assertEquals(true, output.value);

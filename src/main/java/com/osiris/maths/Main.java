@@ -25,6 +25,12 @@ public class Main {
             } else if(line.startsWith("logic-add ")){
                 String[] s = line.split(" ");
                 System.out.println(Bits.from(Integer.parseInt(s[1])).and(Bits.from(Integer.parseInt(s[2]))));
+            } else if(line.startsWith("logic-or ")){
+                String[] s = line.split(" ");
+                System.out.println(Bits.from(Integer.parseInt(s[1])).or(Bits.from(Integer.parseInt(s[2]))));
+            } else if(line.startsWith("logic-xor ")){
+                String[] s = line.split(" ");
+                System.out.println(Bits.from(Integer.parseInt(s[1])).xor(Bits.from(Integer.parseInt(s[2]))));
             }
             else{
                 System.err.println("Unknown command: "+line);

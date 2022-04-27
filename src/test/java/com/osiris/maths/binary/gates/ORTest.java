@@ -15,7 +15,7 @@ class ORTest {
         a.fire();
         // OR gate requires one input to be true/1
         assertEquals(true, output.value);
-        a.inputs = Bits.from("11");
+        a.inputs = Bits.from("11").bits;
         a.fire();
         assertEquals(true, output.value);
     }
