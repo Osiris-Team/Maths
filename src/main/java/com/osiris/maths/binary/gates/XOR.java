@@ -4,28 +4,32 @@ import com.osiris.maths.binary.Bit;
 import com.osiris.maths.binary.Bits;
 
 import java.util.Arrays;
-import java.util.List;
 
-public class AND extends Gate {
-    public AND(Bit output, Bit... inputs) {
+public class XOR extends Gate {
+    public XOR(Bit output, Bit... inputs) {
         super(Arrays.asList(inputs), output);
     }
-    public AND(Bits inputs, Bit output) {
+    public XOR(Bits inputs, Bit output) {
         super(inputs.bits, output);
     }
 
     @Override
     public void fire() {
-        if(inputs.size() == 0) {
+        if(inputs.size() == 0){
             this.output.value = false;
             return;
         }
+        // 0 0 = 0
+        // 1 0 = 1
+        // 0 1 = 1
+        // 1 1 = 0
+        Bit firstBit = inputs.get(0);
         for (Bit b : inputs) {
-            if (!b.value) {
-                this.output.value = false;
+            if (b.value != firstBit.value) {
+                this.output.value = true;
                 return;
             }
         }
-        this.output.value = true;
+        this.output.value = false;
     }
 }

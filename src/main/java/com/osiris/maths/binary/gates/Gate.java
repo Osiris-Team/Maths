@@ -3,11 +3,13 @@ package com.osiris.maths.binary.gates;
 import com.osiris.maths.binary.Bit;
 import com.osiris.maths.binary.Bits;
 
+import java.util.List;
+
 public class Gate {
-    public Bits inputs;
+    public List<Bit> inputs;
     public Bit output;
 
-    public Gate(Bits inputs, Bit output) {
+    public Gate(List<Bit> inputs, Bit output) {
         this.inputs = inputs;
         this.output = output;
     }

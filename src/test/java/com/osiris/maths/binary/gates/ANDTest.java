@@ -11,12 +11,12 @@ class ANDTest {
     @Test
     void fire() {
         Bit output = new Bit(0);
-        AND a = new AND(Bits.fromBinaryString("011"), output);
+        AND a = new AND(Bits.from("011"), output);
         a.fire();
         System.out.println(a.inputs);
         // AND gate requires all inputs to be true/1
         assertEquals(false, output.value);
-        a.inputs = Bits.fromBinaryString("11");
+        a.inputs = Bits.from("11");
         System.out.println(a.inputs);
         a.fire();
         assertEquals(true, output.value);
