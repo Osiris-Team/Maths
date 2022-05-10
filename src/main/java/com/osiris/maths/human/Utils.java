@@ -18,4 +18,16 @@ public class Utils {
         return false;
     }
 
+    /**
+     * input: -10 output: 10 <br>
+     * input: 10 output: -10
+     */
+    public static Double invertNumber(Double num){
+        String sNum = ""+num;
+        if(sNum.contains("-"))
+            return Double.parseDouble(sNum.replace("-", ""));
+        else
+            return Double.parseDouble("-"+sNum);
+    }
+
 }

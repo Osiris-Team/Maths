@@ -122,4 +122,13 @@ class MatrixTest {
         assertEquals(1.0, result.at(1, 0));
         assertEquals(11.0, result.at(1, 1));
     }
+
+    @Test
+    void gaussianElimination() throws Matrix.NotQuadratic {
+        Matrix m = new Matrix(3, 3);
+        m.fillRow(0, 1.0, 2.0, 3.0);
+        m.fillRow(1, 4.0, 5.0, 6.0);
+        m.fillRow(2, 7.0, 8.0, 9.0);
+        m.determinantByGaussianElimination(true);
+    }
 }

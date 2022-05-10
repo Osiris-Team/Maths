@@ -23,9 +23,17 @@ public class Matrix {
         this.rows = new ArrayList<>();
         for (int i = 0; i < rowsCount; i++) {
             List<Double> values = new ArrayList<>(columnsCount);
-            Collections.fill(values, 0.0);
+            for (int j = 0; j < columnsCount; j++) {
+                values.add(0.0);
+            }
             this.rows.add(values);
         }
+    }
+
+    public Matrix copy(){
+        Matrix copy = new Matrix(rowsCount, columnsCount);
+        copy.rows = new ArrayList<>(this.rows);
+        return copy;
     }
 
     /**
@@ -79,6 +87,79 @@ public class Matrix {
 
     public void setRow(int i, List<Double> values) {
         this.rows.set(i, values);
+    }
+
+    public void fillRow(int i, Double... values) {
+        List<Double> list = new ArrayList<>(values.length);
+        Collections.addAll(list, values);
+        fillRow(i, list);
+    }
+
+    public void fillRow(int i, List<Double> values) {
+        for (int j = 0; j < this.rows.get(i).size(); j++) {
+            this.rows.get(i).set(j, values.get(j));
+        }
+    }
+
+    /**
+     * Switches row at i1 with the row at i2. (i == index)
+     */
+    public void switchRow(int i1, int i2){
+        List<Double> tempRow = rows.get(i1);
+        rows.set(i1, rows.get(i2));
+        rows.set(i2, tempRow);
+    }
+
+    /**
+     * Performs addition of provided number, with each number inside the row i.
+     */
+    public List<Double> sumRowWith(int i, Double num){
+        List<Double> newRow = new ArrayList<>(columnsCount);
+        for (int j = 0; j < rows.get(i).size(); j++) {
+            newRow.add(rows.get(i).get(j) + num);
+        }
+        return newRow;
+    }
+
+    public List<Double> sumRowWith(int i, List<Double> otherRow){
+        List<Double> newRow = new ArrayList<>(columnsCount);
+        for (int j = 0; j < rows.get(i).size(); j++) {
+            newRow.add(rows.get(i).get(j) + otherRow.get(j));
+        }
+        return newRow;
+    }
+
+    /**
+     * Performs subtraction of provided number, with each number inside the row i.
+     */
+    public List<Double> substractRowWith(int i, Double num){
+        List<Double> newRow = new ArrayList<>(columnsCount);
+        for (int j = 0; j < rows.get(i).size(); j++) {
+            newRow.add(rows.get(i).get(j) - num);
+        }
+        return newRow;
+    }
+
+    /**
+     * Performs multiplication of provided number, with each number inside the row i.
+     */
+    public List<Double> multiplyRowWith(int i, Double num){
+        List<Double> newRow = new ArrayList<>(columnsCount);
+        for (int j = 0; j < rows.get(i).size(); j++) {
+            newRow.add(rows.get(i).get(j) * num);
+        }
+        return newRow;
+    }
+
+    /**
+     * Performs division of provided number, with each number inside the row i.
+     */
+    public List<Double> divideRowWith(int i, Double num){
+        List<Double> newRow = new ArrayList<>(columnsCount);
+        for (int j = 0; j < rows.get(i).size(); j++) {
+            newRow.add(rows.get(i).get(j) / num);
+        }
+        return newRow;
     }
 
     public List<List<Double>> getColumns() {
@@ -176,7 +257,7 @@ public class Matrix {
      */
     public Matrix multiply(Matrix m) throws NotEqual {
         if (m.rowsCount != columnsCount)
-            throw new NotEqual("Provided matrix rowCount must be equal to this matrix columnCount. " + m.rowsCount + "!=" + columnsCount);
+            throw new NotEqual("PROVIDED matrix ROW count must be equal to THIS matrix COLUMN count. " + m.rowsCount + "!=" + columnsCount);
         Matrix newM = new Matrix(rowsCount, m.columnsCount);
         List<List<Double>> otherColumns = m.getColumns();
         for (int i = 0; i < rowsCount; i++) {
@@ -200,6 +281,67 @@ public class Matrix {
 
     public Matrix laplaceExpansion() {
         return null;
+    }
+
+    public Double determinantByGaussianElimination(boolean printSteps) throws NotQuadratic {
+        if(!isQuadratic()) throw new NotQuadratic(this);
+
+        if(printSteps) {
+            System.out.println("PERFORM GAUSSIAN ELIMINATION ON: ");
+            System.out.println(this);
+            System.out.println("Before starting make sure element at(0,0) is == 1 and != 0.");
+        }
+
+        // These are operations done that need to be reverted at the end
+        List<Variable> operationsToRevert = new ArrayList<>();
+
+        if(at(0, 0) == 0.0) {
+            rows.set(0, sumRowWith(0, 1.0));
+            operationsToRevert.add(Variable.parse("+1.0"));
+        }
+        if(at(0,0) != 1.0) {
+            rows.set(0, divideRowWith(0, at(0, 0)));
+            operationsToRevert.add(Variable.parse("/"+at(0, 0)));
+        }
+        if(printSteps) System.out.println(this.asString());
+
+        List<List<Double>> columns = getColumns();
+        for (int i = 0; i < columnsCount; i++) {
+            if(printSteps) System.out.println("Step "+i);
+            for (int j = i + 1; j < columns.get(i).size(); j++) {
+                if(printSteps) System.out.print(rows.get(i)+" * "+Utils.invertNumber(columns.get(i).get(j))+" = ");
+                List<Double> row = multiplyRowWith(i, Utils.invertNumber(columns.get(i).get(j)));
+                if(printSteps) {
+                    System.out.println(row);
+                    System.out.print(rows.get(j)+" + "+row+" = ");
+                }
+                List<Double> result = sumRowWith(j, row);
+                if(printSteps) System.out.println(result);
+                this.rows.set(j, result);
+            }
+            columns = getColumns();
+            System.out.println("Result:");
+            System.out.println(this.asString());
+        }
+
+        System.out.println("Calculating determinant: ");
+        Double result = 1.0;
+        for (int i = 0; i < rowsCount; i++) {
+            result *= at(i, i);
+
+        }
+        for (Variable var : operationsToRevert) {
+            System.out.println("Revert operation: "+var.operator+" "+var.value);
+            if(var.operator == Variable.Operator.PLUS) result -= var.value;
+            else if(var.operator == Variable.Operator.MINUS) result += var.value;
+            else if(var.operator == Variable.Operator.MULTIPLY) result /= var.value;
+            else if(var.operator == Variable.Operator.DIVIDE) result *= var.value;
+        }
+        return result;
+    }
+
+    public boolean isQuadratic(){
+        return rowsCount == columnsCount;
     }
 
     public class NotEqual extends Exception {
