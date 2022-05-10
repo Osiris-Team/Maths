@@ -306,8 +306,23 @@ public class Matrix {
         if(printSteps) System.out.println(this.asString());
 
         List<List<Double>> columns = getColumns();
-        for (int i = 0; i < columnsCount; i++) {
+        for (int i = 0; i < columnsCount - 1; i++) {
             if(printSteps) System.out.println("Step "+i);
+            if(at(i, i) != 1.0){
+                if(at(i,i) == 0.0){
+                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ at(i,i)+" != 1.0, but 0.0, thus "+this.rows.get(i)+" + 1 = ");
+                    List<Double> row = sumRowWith(i, 1.0);
+                    operationsToRevert.add(Variable.parse("+1.0"));
+                    this.rows.set(i, row);
+                    if(printSteps) System.out.println(row);
+                } else{
+                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ at(i,i)+" != 1.0, thus "+this.rows.get(i)+" / "+at(i,i)+" = ");
+                    List<Double> row = divideRowWith(i, at(i,i));
+                    operationsToRevert.add(Variable.parse("/"+at(i,i)));
+                    this.rows.set(i, row);
+                    if(printSteps) System.out.println(row);
+                }
+            }
             for (int j = i + 1; j < columns.get(i).size(); j++) {
                 if(printSteps) System.out.print(rows.get(i)+" * "+Utils.invertNumber(columns.get(i).get(j))+" = ");
                 List<Double> row = multiplyRowWith(i, Utils.invertNumber(columns.get(i).get(j)));
@@ -324,19 +339,19 @@ public class Matrix {
             System.out.println(this.asString());
         }
 
-        System.out.println("Calculating determinant: ");
+        if(printSteps) System.out.println("Calculating determinant: ");
         Double result = 1.0;
         for (int i = 0; i < rowsCount; i++) {
             result *= at(i, i);
-
         }
         for (Variable var : operationsToRevert) {
-            System.out.println("Revert operation: "+var.operator+" "+var.value);
+            if(printSteps) System.out.println("Revert operation: "+var.operator+" "+var.value);
             if(var.operator == Variable.Operator.PLUS) result -= var.value;
             else if(var.operator == Variable.Operator.MINUS) result += var.value;
             else if(var.operator == Variable.Operator.MULTIPLY) result /= var.value;
             else if(var.operator == Variable.Operator.DIVIDE) result *= var.value;
         }
+        if(printSteps) System.out.println("Determinant: "+ result);
         return result;
     }
 
