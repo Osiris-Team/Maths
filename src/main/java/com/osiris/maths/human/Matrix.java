@@ -1,5 +1,8 @@
 package com.osiris.maths.human;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +37,35 @@ public class Matrix {
         Matrix copy = new Matrix(rowsCount, columnsCount);
         copy.rows = new ArrayList<>(this.rows);
         return copy;
+    }
+
+    /**
+     * Expects string looking like this:
+     * 10 2 1
+     * 5 5 5
+     * 1 2 7
+     */
+    public Matrix set(String s){
+        List<Double> row;
+        int rowIndex = 0;
+        try(BufferedReader reader = new BufferedReader(new StringReader(s))){
+            String line;
+            while((line = reader.readLine()) != null){
+                row = new ArrayList<>();
+                String[] sArr = line.split(" ");
+                for (String num : sArr) {
+                    String numClean = num.trim();
+                    if(!numClean.isEmpty())
+                        row.add(Double.parseDouble(numClean));
+                    else row.add(0.0);
+                }
+                setRow(rowIndex, row);
+                rowIndex++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
     /**
@@ -342,8 +374,11 @@ public class Matrix {
         if(printSteps) System.out.println("Calculating determinant: ");
         Double result = 1.0;
         for (int i = 0; i < rowsCount; i++) {
+            if(printSteps) System.out.print(at(i,i));
+            if(printSteps && i != rowsCount-1) System.out.print(" *");
             result *= at(i, i);
         }
+        if(printSteps) System.out.println(" = "+result);
         for (Variable var : operationsToRevert) {
             if(printSteps) System.out.println("Revert operation: "+var.operator+" "+var.value);
             if(var.operator == Variable.Operator.PLUS) result -= var.value;

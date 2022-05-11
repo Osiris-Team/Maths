@@ -13,11 +13,11 @@ public class Variable {
     public static Variable parse(String s){
         s = s.trim();
         Operator operator = Operator.PLUS;
-        if(s.contains("-")) operator = Operator.MINUS;
-        else if(s.contains("*")) operator = Operator.MULTIPLY;
-        else if(s.contains("/")) operator = Operator.DIVIDE;
+        if(s.startsWith("-")) operator = Operator.MINUS;
+        else if(s.startsWith("*")) operator = Operator.MULTIPLY;
+        else if(s.startsWith("/")) operator = Operator.DIVIDE;
         String name = s.replaceAll("[0-9.,+\\-*/]", "");
-        Double value = Double.parseDouble(s.replaceAll("[^0-9.,]", ""));
+        Double value = Double.parseDouble(s.replaceAll("[^0-9.,\\-]", ""));
         Variable var = new Variable(name, value);
         var.operator = operator;
         return var;
