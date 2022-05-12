@@ -132,4 +132,14 @@ class MatrixTest {
                 "3 0 12 7\n");
         m.determinantByGaussianElimination(true);
     }
+
+    @Test
+    void invertByGaussJordan() throws Matrix.NotQuadratic, Matrix.UnsupportedMatrix {
+        Matrix m = new Matrix(4, 4);
+        m.set("1 0 2 3\n" +
+                "0 1 3 4\n" +
+                "2 1 -1 3\n" +
+                "3 0 12 7\n");
+        m.copyInvertedByGaussJordan(true);
+    }
 }

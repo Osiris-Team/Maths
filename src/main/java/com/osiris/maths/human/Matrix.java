@@ -10,6 +10,7 @@ import java.util.List;
 public class Matrix {
     public int rowsCount, columnsCount;
     public List<List<Double>> rows;
+    public List<Variable> operationsToRevert;
 
     /**
      * Creates a matrix filled with zeros, with
@@ -76,6 +77,16 @@ public class Matrix {
      */
     public Double at(int iR, int iC) {
         return rows.get(iR).get(iC);
+    }
+
+    /**
+     * Sets the value at the provided row and column index.
+     *
+     * @param iR indexRow
+     * @param iC indexColumn
+     */
+    public void set(int iR, int iC, Double num) {
+        rows.get(iR).set(iC, num);
     }
 
     public void resize(int newRowsCount, int newColumnsCount) {
@@ -307,6 +318,43 @@ public class Matrix {
         return newM;
     }
 
+    /**
+     * Copies the current matrix and performs inversion by Gauss/Jordan on it.
+     * @return the matrix copy.
+     */
+    public Matrix copyInvertedByGaussJordan(boolean printSteps) throws NotQuadratic, UnsupportedMatrix {
+        if(!isQuadratic()) throw new NotQuadratic(this);
+        if(determinantByGaussianElimination() == 0.0)
+            throw new UnsupportedMatrix("The determinant of this matrix is == 0.0, which means that there is no inverted matrix.");
+        Matrix onesMatrix = new Matrix(rowsCount, columnsCount);
+        for (int i = 0; i < rowsCount; i++) {
+            onesMatrix.set(i, i, 1.0);
+        }
+        // TODO
+        if(printSteps) {
+            System.out.println("PERFORM INVERSION BY GAUSS/JORDAN ON: ");
+            System.out.println(this);
+            System.out.println("Ones matrix:");
+            System.out.println(onesMatrix.asString());
+        }
+        Matrix copy = this.copy();
+        // Make sure diagonals are all 1
+        for (int i = 0; i < copy.rowsCount; i++) {
+            if(at(i,i) != 1){
+
+            }
+        }
+
+        for (List<Double> l: copy.rows) {
+            for (Double num: l) {
+                if(num != 0.0 && num != 1.0){
+
+                }
+            }
+        }
+        return copy;
+    }
+
     public Double determinant() {
         return null;
     }
@@ -314,72 +362,23 @@ public class Matrix {
     public Matrix laplaceExpansion() {
         return null;
     }
-
+    public Double determinantByGaussianElimination() throws NotQuadratic {
+        return determinantByGaussianElimination(false);
+    }
     public Double determinantByGaussianElimination(boolean printSteps) throws NotQuadratic {
         if(!isQuadratic()) throw new NotQuadratic(this);
 
-        if(printSteps) {
-            System.out.println("PERFORM GAUSSIAN ELIMINATION ON: ");
-            System.out.println(this);
-            System.out.println("Before starting make sure element at(0,0) is == 1 and != 0.");
-        }
-
-        // These are operations done that need to be reverted at the end
-        List<Variable> operationsToRevert = new ArrayList<>();
-
-        if(at(0, 0) == 0.0) {
-            rows.set(0, sumRowWith(0, 1.0));
-            operationsToRevert.add(Variable.parse("+1.0"));
-        }
-        if(at(0,0) != 1.0) {
-            rows.set(0, divideRowWith(0, at(0, 0)));
-            operationsToRevert.add(Variable.parse("/"+at(0, 0)));
-        }
-        if(printSteps) System.out.println(this.asString());
-
-        List<List<Double>> columns = getColumns();
-        for (int i = 0; i < columnsCount - 1; i++) {
-            if(printSteps) System.out.println("Step "+i);
-            if(at(i, i) != 1.0){
-                if(at(i,i) == 0.0){
-                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ at(i,i)+" != 1.0, but 0.0, thus "+this.rows.get(i)+" + 1 = ");
-                    List<Double> row = sumRowWith(i, 1.0);
-                    operationsToRevert.add(Variable.parse("+1.0"));
-                    this.rows.set(i, row);
-                    if(printSteps) System.out.println(row);
-                } else{
-                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ at(i,i)+" != 1.0, thus "+this.rows.get(i)+" / "+at(i,i)+" = ");
-                    List<Double> row = divideRowWith(i, at(i,i));
-                    operationsToRevert.add(Variable.parse("/"+at(i,i)));
-                    this.rows.set(i, row);
-                    if(printSteps) System.out.println(row);
-                }
-            }
-            for (int j = i + 1; j < columns.get(i).size(); j++) {
-                if(printSteps) System.out.print(rows.get(i)+" * "+Utils.invertNumber(columns.get(i).get(j))+" = ");
-                List<Double> row = multiplyRowWith(i, Utils.invertNumber(columns.get(i).get(j)));
-                if(printSteps) {
-                    System.out.println(row);
-                    System.out.print(rows.get(j)+" + "+row+" = ");
-                }
-                List<Double> result = sumRowWith(j, row);
-                if(printSteps) System.out.println(result);
-                this.rows.set(j, result);
-            }
-            columns = getColumns();
-            System.out.println("Result:");
-            System.out.println(this.asString());
-        }
+        Matrix copy = copyWithGaussianElimination(printSteps);
 
         if(printSteps) System.out.println("Calculating determinant: ");
         Double result = 1.0;
-        for (int i = 0; i < rowsCount; i++) {
-            if(printSteps) System.out.print(at(i,i));
-            if(printSteps && i != rowsCount-1) System.out.print(" *");
-            result *= at(i, i);
+        for (int i = 0; i < copy.rowsCount; i++) {
+            if(printSteps) System.out.print(copy.at(i,i));
+            if(printSteps && i != copy.rowsCount-1) System.out.print(" * ");
+            result *= copy.at(i, i);
         }
         if(printSteps) System.out.println(" = "+result);
-        for (Variable var : operationsToRevert) {
+        for (Variable var : copy.operationsToRevert) {
             if(printSteps) System.out.println("Revert operation: "+var.operator+" "+var.value);
             if(var.operator == Variable.Operator.PLUS) result -= var.value;
             else if(var.operator == Variable.Operator.MINUS) result += var.value;
@@ -390,8 +389,78 @@ public class Matrix {
         return result;
     }
 
+    /**
+     * Copies the current matrix and performs gaussian elimination on it.
+     * @return the matrix copy.
+     */
+    public Matrix copyWithGaussianElimination(boolean printSteps) throws NotQuadratic {
+        if(!isQuadratic()) throw new NotQuadratic(this);
+
+        Matrix copy = this.copy();
+        if(printSteps) {
+            System.out.println("PERFORM GAUSSIAN ELIMINATION ON COPY: ");
+            System.out.println(copy);
+            System.out.println("Before starting make sure element at(0,0) is == 1 and != 0.");
+        }
+
+        // These are operations done that need to be reverted at the end
+        List<Variable> operationsToRevert = new ArrayList<>();
+        copy.operationsToRevert = operationsToRevert;
+
+        if(at(0, 0) == 0.0) {
+            copy.rows.set(0, sumRowWith(0, 1.0));
+            operationsToRevert.add(Variable.parse("+1.0"));
+        }
+        if(at(0,0) != 1.0) {
+            copy.rows.set(0, divideRowWith(0, at(0, 0)));
+            operationsToRevert.add(Variable.parse("/"+at(0, 0)));
+        }
+        if(printSteps) System.out.println(copy.asString());
+
+        List<List<Double>> columns = copy.getColumns();
+        for (int i = 0; i < columnsCount - 1; i++) {
+            if(printSteps) System.out.println("Step "+i);
+            if(copy.at(i, i) != 1.0){
+                if(copy.at(i,i) == 0.0){
+                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ copy.at(i,i)+" != 1.0, but 0.0, thus "+copy.rows.get(i)+" + 1 = ");
+                    List<Double> row = copy.sumRowWith(i, 1.0);
+                    operationsToRevert.add(Variable.parse("+1.0"));
+                    copy.rows.set(i, row);
+                    if(printSteps) System.out.println(row);
+                } else{
+                    if(printSteps) System.out.print("at("+i+", "+i+") == "+ copy.at(i,i)+" != 1.0, thus "+copy.rows.get(i)+" / "+copy.at(i,i)+" = ");
+                    List<Double> row = copy.divideRowWith(i, copy.at(i,i));
+                    operationsToRevert.add(Variable.parse("/"+copy.at(i,i)));
+                    copy.rows.set(i, row);
+                    if(printSteps) System.out.println(row);
+                }
+            }
+            for (int j = i + 1; j < columns.get(i).size(); j++) {
+                if(printSteps) System.out.print(copy.rows.get(i)+" * "+Utils.invertNumber(columns.get(i).get(j))+" = ");
+                List<Double> row = copy.multiplyRowWith(i, Utils.invertNumber(columns.get(i).get(j)));
+                if(printSteps) {
+                    System.out.println(row);
+                    System.out.print(copy.rows.get(j)+" + "+row+" = ");
+                }
+                List<Double> result = copy.sumRowWith(j, row);
+                if(printSteps) System.out.println(result);
+                copy.rows.set(j, result);
+            }
+            columns = copy.getColumns();
+            System.out.println("Result:");
+            System.out.println(copy.asString());
+        }
+        return copy;
+    }
+
     public boolean isQuadratic(){
         return rowsCount == columnsCount;
+    }
+
+    public class UnsupportedMatrix extends Exception {
+        public UnsupportedMatrix(String message) {
+            super(message);
+        }
     }
 
     public class NotEqual extends Exception {
